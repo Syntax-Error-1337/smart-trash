@@ -4,21 +4,21 @@ import React from "react";
 const solutionPoints = [
   {
     icon: "fas fa-brain",
-    title: "AI-Powered Sensors",
+    title: "Multi-Sensor Monitoring",
     description:
-      "Our neural networks process data from IoT sensors to predict fill levels with unprecedented accuracy.",
+      "Combined weight, gas, and ultrasonic sensors feed AWS IoT Core for live insights.",
   },
   {
     icon: "fas fa-route",
-    title: "Optimized Collection",
+    title: "Predictive Pickup Scheduling",
     description:
-      "Machine learning algorithms calculate the most efficient routes, reducing fuel consumption by up to 40%.",
+      "Fill-level forecasts automatically schedule pickups only when bins reach 90%.",
   },
   {
     icon: "fas fa-recycle",
-    title: "Smart Recycling",
+    title: "Safety & Sustainability",
     description:
-      "Computer vision identifies and sorts recyclables automatically, increasing recycling rates by 35%.",
+      "Gas-level alerts and fill-level forecasts ensure timely service and a greener city.",
   },
 ];
 
@@ -31,11 +31,10 @@ const Solutions = () => {
             <i className="fas fa-cogs mr-2"></i> AI IN ACTION
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-light mb-4">
-            How Our AI Transforms Waste Management
+            How WasteWatch Transforms Waste Collection
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto">
-            A seamless integration of artificial intelligence with IoT sensors
-            for maximum efficiency.
+            A complete Cloud & Fog IoT solution for real-time bin monitoring, predictive routing, and automated alerts.
           </p>
         </div>
 
@@ -112,11 +111,10 @@ const Solutions = () => {
                 </div>
                 <div className="ml-4">
                   <h4 className="text-lg font-medium text-light">
-                    AI Insights Dashboard
+                    Cloud & Fog Dashboard
                   </h4>
                   <p className="mt-1 text-sm text-gray-400">
-                    Get real-time recommendations and predictive analytics to
-                    optimize your waste management strategy.
+                    Visualize historical and forecasted bin data via serverless APIs.
                   </p>
                 </div>
               </div>

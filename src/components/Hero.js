@@ -1,7 +1,7 @@
 // src/components/Hero.jsx
 import React from "react";
 
-const Hero = () => {
+const Hero = ({ onLoginClick }) => {
   return (
     <section
       id="home"
@@ -20,25 +20,25 @@ const Hero = () => {
           {/* Left Content */}
           <div className="lg:w-1/2 mb-10 lg:mb-0">
             <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-primary/20 to-ai-purple/20 text-primary mb-4 border border-primary/30">
-              <span className="mr-2">AI-POWERED WASTE MANAGEMENT</span>
+              <span className="mr-2">AI-POWERED SMART WASTE MONITORING</span>
               <i className="fas fa-bolt"></i>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
               <span className="ai-gradient-text">Smart Waste</span>
               <br />
-              <span className="text-light">For Sustainable Cities</span>
+              <span className="text-light">For Healthier Cities</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-lg">
-              EcoAI's neural networks optimize waste collection routes, predict
-              fill levels, and reduce environmental impact with real-time AI
-              analytics.
+              WasteWatch's LSTM models forecast each bin's fill level and gas warnings, optimize collection routes, and feed real-time insights into our Cloud & Fog pipeline.
             </p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <button className="gradient-bg text-white px-6 py-3 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center">
-                Get Started <i className="fas fa-chevron-right ml-2"></i>
+              <button
+                onClick={onLoginClick}
+                className="gradient-bg text-white px-6 py-3 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center">
+                View Live Dashboard <i className="fas fa-chevron-right ml-2"></i>
               </button>
               <button className="border-2 border-primary/30 text-light px-6 py-3 rounded-full text-lg font-semibold hover:bg-primary/10 transition-all duration-300 flex items-center">
-                <i className="fas fa-play-circle mr-2"></i> Watch Demo
+                <i className="fas fa-play-circle mr-2"></i> Book a Demo
               </button>
             </div>
 

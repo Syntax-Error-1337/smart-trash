@@ -39,7 +39,7 @@ function App() {
   return (
     <div className="font-sans bg-dark text-light antialiased">
       <Navbar onLoginClick={() => setIsLoginOpen(true)} />
-      <Hero />
+      <Hero onLoginClick={() => setIsLoginOpen(true)} />
       <Features />
       <Solutions />
       <Testimonials />

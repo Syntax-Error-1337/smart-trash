@@ -13,7 +13,7 @@ const Footer = () => {
                 <i className="fas fa-brain text-white text-sm"></i>
               </div>
               <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-ai-purple">
-                EcoAI
+                WasteWatch
               </span>
             </div>
             <p className="text-gray-400 mt-4">
@@ -139,7 +139,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2023 EcoAI Technologies. All rights reserved.
+            © 2025 WasteWatch Technologies. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             {["Privacy Policy", "Terms of Service", "AI Ethics"].map(

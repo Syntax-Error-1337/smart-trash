@@ -27,9 +27,9 @@ const LoginModal = ({ show, onClose, onLogin }) => {
           <div className="w-16 h-16 gradient-bg rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl text-white">
             <i className="fas fa-lock"></i>
           </div>
-          <h2 className="text-2xl font-bold text-light">Access AI Dashboard</h2>
+          <h2 className="text-2xl font-bold text-light">Access WasteWatch Dashboard</h2>
           <p className="text-gray-400 mt-2">
-            Sign in to your EcoAI management portal
+            Sign in to your Smart Waste Monitoring portal
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">

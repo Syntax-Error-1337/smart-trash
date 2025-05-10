@@ -8,7 +8,7 @@ const testimonials = [
     image: "https://randomuser.me/api/portraits/women/42.jpg",
     rating: 5,
     quote:
-      "EcoAI's predictive algorithms reduced our collection costs by 45% while improving service levels. The AI insights are game-changing for municipal waste management.",
+      "WasteWatch's predictive algorithms reduced our collection costs by 45% while improving service levels. The AI insights are game-changing for municipal waste management.",
     stat: "AI Route Optimization saved $220k annually",
   },
   {
@@ -26,7 +26,7 @@ const testimonials = [
     image: "https://randomuser.me/api/portraits/women/68.jpg",
     rating: 4.5,
     quote:
-      "Managing waste across 200+ locations is now effortless with EcoAI's centralized dashboard. The neural network predictions help us allocate resources optimally.",
+      "Managing waste across 200+ locations is now effortless with WasteWatch's centralized dashboard. The neural network predictions help us allocate resources optimally.",
     stat: "AI reduced missed collections by 92%",
   },
 ];
@@ -41,11 +41,10 @@ const Testimonials = () => {
             LEADERS
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-light mb-4">
-            What Our Clients Say
+            Customer Success Stories
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto">
-            Organizations worldwide are transforming their waste management with
-            EcoAI's artificial intelligence solutions.
+            Cities and facilities worldwide use WasteWatch to cut costs, boost service levels, and improve sustainability.
           </p>
         </div>
 

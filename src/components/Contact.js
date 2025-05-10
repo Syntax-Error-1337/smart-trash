@@ -150,7 +150,7 @@ const Contact = () => {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-light">Email</h3>
-                    <p className="mt-1 text-gray-400">info@ecoai.com</p>
+                    <p className="mt-1 text-gray-400">info@wastewatch.com</p>
                     <p className="text-sm text-primary mt-1">
                       Average response time: 2 hours
                     </p>

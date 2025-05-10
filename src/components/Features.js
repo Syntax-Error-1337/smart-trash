@@ -4,24 +4,24 @@ import React from "react";
 const features = [
   {
     icon: "fas fa-network-wired",
-    title: "Neural Network Analysis",
+    title: "Time-Series Forecasting",
     description:
-      "Deep learning models predict fill levels and optimize collection routes with 95% accuracy.",
-    tags: ["Machine Learning", "Predictive Analytics"],
+      "LSTM models forecast fill levels and gas metrics with production-ready accuracy.",
+    tags: ["Deep Learning", "Forecasting"],
   },
   {
     icon: "fas fa-eye",
-    title: "Computer Vision",
+    title: "IoT Sensor Integration",
     description:
-      "AI-powered cameras classify waste types automatically for improved recycling rates.",
-    tags: ["Image Recognition", "Real-time"],
+      "Real-time data from weight, gas, and ultrasonic sensors for fill and safety monitoring.",
+    tags: ["IoT", "Real-time"],
   },
   {
     icon: "fas fa-chart-line",
-    title: "Smart Analytics",
+    title: "Cloud & Fog Analytics",
     description:
-      "Comprehensive dashboard with AI-generated insights and sustainability recommendations.",
-    tags: ["Data Visualization", "Trend Analysis"],
+      "Serverless pipeline stores sensor data in RDS and delivers 7-day forecasts via Lambda.",
+    tags: ["Cloud & Fog", "Trend Analysis"],
   },
 ];
 
@@ -37,11 +37,10 @@ const Features = () => {
             <i className="fas fa-robot mr-2"></i> AI-POWERED FEATURES
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-light mb-4">
-            Intelligent Waste Management
+            Intelligent Smart Bin Monitoring
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto">
-            Our AI algorithms continuously learn and adapt to optimize waste
-            collection and recycling processes.
+            Our models learn from sensor data to predict bin fill %, gas hazards, and trigger cloud-based alerts. Learn and adapt to optimize waste collection and recycling processes.
           </p>
         </div>
 

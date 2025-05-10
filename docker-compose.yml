@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # mount code and keep node_modules inside container
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    # some environments need polling for file watching
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run start

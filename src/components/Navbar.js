@@ -12,7 +12,7 @@ const Navbar = ({ onLoginClick }) => {
                 <i className="fas fa-brain text-white text-lg"></i>
               </div>
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-ai-purple">
-                EcoAI
+                WasteWatch Smart Bin
               </span>
             </div>
             <div className="hidden lg:ml-10 lg:flex lg:space-x-8">
@@ -26,13 +26,13 @@ const Navbar = ({ onLoginClick }) => {
                 href="#features"
                 className="text-light hover:text-primary px-3 py-2 text-sm font-medium"
               >
-                AI Features
+                AI Insights
               </a>
               <a
                 href="#solutions"
                 className="text-light hover:text-primary px-3 py-2 text-sm font-medium"
               >
-                Solutions
+                Use Cases
               </a>
               <a
                 href="#contact"
@@ -47,7 +47,7 @@ const Navbar = ({ onLoginClick }) => {
               onClick={onLoginClick}
               className="ml-8 gradient-bg text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg transform hover:scale-105"
             >
-              Dashboard <i className="fas fa-arrow-right ml-1"></i>
+              Launch Dashboard <i className="fas fa-arrow-right ml-1"></i>
             </button>
           </div>
         </div>
