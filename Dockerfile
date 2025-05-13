@@ -1,17 +1,30 @@
-# Dockerfile
-FROM node:22-alpine
+# Step 1: Build the app
+FROM node:18-alpine AS build
 
-# set working directory
+# Set working directory
 WORKDIR /app
 
-# only copy dependency manifests, install, then copy rest
-COPY package*.json ./
+# Install dependencies
+COPY package.json package-lock.json ./
 RUN npm install
 
+# Copy source code
 COPY . .
 
-# make port 3000 available
-EXPOSE 3000
+# Build the app
+RUN npm run build
 
-# start the React dev server
-CMD ["npm", "run", "start"]
+# Step 2: Serve the built app with a lightweight web server
+FROM nginx:alpine
+
+# Copy build output to nginx's public folder
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy custom nginx config (optional but recommended for SPA)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

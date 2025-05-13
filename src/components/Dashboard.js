@@ -1,5 +1,5 @@
 // src/components/Dashboard.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,93 +10,182 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  DirectionsService,
+  DirectionsRenderer,
+  Marker,
+} from "@react-google-maps/api";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
+
+// Base URL for backend API
+const API_BASE = "xxx";
 
 const Dashboard = ({ onLogout }) => {
-  // State for bin selector and date range
-  const [selectedBin, setSelectedBin] = useState("All Bins");
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "xxx",
+  });
+
+  // State
+  const [bins, setBins] = useState([]);
+  const [selectedBin, setSelectedBin] = useState("");
   const [startDate, setStartDate] = useState("2025-04-01");
   const [endDate, setEndDate] = useState("2025-05-08");
 
-  // Dummy KPI data
-  const kpis = {
-    currentFill: 72,
-    nextPickup: "2025-05-10",
-    ch4: 3.5,
-    nh3: 1.2,
-  };
+  const [kpis, setKpis] = useState({
+    current_fill: 0,
+    next_pickup: "",
+    ch4: 0,
+    nh3: 0,
+  });
+  const [forecast, setForecast] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [alerts, setAlerts] = useState([]);
 
-  // Dummy time-series data for Fill % vs Forecast
-  const fillForecastData = {
-    labels: ["Apr 29", "Apr 30", "May 1", "May 2", "May 3", "May 4", "May 5", "May 6", "May 7", "May 8"],
+  const [binCoords, setBinCoords] = useState([]);
+  const [orderedCoords, setOrderedCoords] = useState([]);
+  const [directions, setDirections] = useState(null);
+
+  // Load bins on mount
+  useEffect(() => {
+    fetch(`${API_BASE}/bins`)
+      .then((res) => res.json())
+      .then((data) => {
+        setBins(data);
+        if (data.length) setSelectedBin(data[0].id);
+      })
+      .catch(console.error);
+  }, []);
+
+  // Load data for selected bin
+  useEffect(() => {
+    if (!selectedBin) return;
+
+    // KPI
+    fetch(`${API_BASE}/bins/${selectedBin}/kpi`)
+      .then((res) => res.json())
+      .then(setKpis)
+      .catch(console.error);
+
+    // Forecast
+    fetch(`${API_BASE}/bins/${selectedBin}/forecast`)
+      .then((res) => res.json())
+      .then(setForecast)
+      .catch(console.error);
+
+    // History
+    fetch(`${API_BASE}/bins/${selectedBin}/history`)
+      .then((res) => res.json())
+      .then(setHistory)
+      .catch(console.error);
+
+    // Alerts
+    fetch(`${API_BASE}/bins/${selectedBin}/alerts`)
+      .then((res) => res.json())
+      .then((json) => setAlerts(json.alerts))
+      .catch(console.error);
+
+    // Set coordinates for route optimization (example: use bin and its neighbors)
+    const coords = bins.map((b) => ({ lat: b.latitude, lng: b.longitude }));
+    setBinCoords(coords);
+  }, [selectedBin, bins]);
+
+  // Optimize route when coords change
+  useEffect(() => {
+    if (binCoords.length < 2) return;
+    fetch(`${API_BASE}/optimize-route`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ locations: binCoords }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        setOrderedCoords(json.route);
+      })
+      .catch(console.error);
+  }, [binCoords]);
+
+  // Request Google Directions
+  useEffect(() => {
+    if (!isLoaded || !orderedCoords.length) return;
+    const service = new window.google.maps.DirectionsService();
+    const origin = orderedCoords[0];
+    const destination = origin;
+    const waypoints = orderedCoords.slice(1, -1).map((loc) => ({ location: loc, stopover: true }));
+    service.route(
+      {
+        origin,
+        destination,
+        waypoints,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          setDirections(result);
+        } else {
+          console.error("Directions request failed: ", status);
+        }
+      }
+    );
+  }, [isLoaded, orderedCoords]);
+
+  // Prepare chart data
+  const fillData = {
+    labels: forecast.map((pt) => new Date(pt.timestamp).toLocaleDateString()),
     datasets: [
       {
         label: "Actual Fill %",
-        data: [65, 68, 70, 71, 73, 75, 78, 80, 72, kpis.currentFill],
+        data: history.map((h) => h.fill).reverse(),
         borderColor: "#00E0FF",
-        backgroundColor: "rgba(0, 224, 255, 0.2)",
-        tension: 0.3,
+        backgroundColor: "rgba(0,224,255,0.2)",
       },
       {
         label: "Forecast Fill %",
-        data: [null, null, null, null, null, null, null, 82, 85, 88],
+        data: forecast.map((f) => f.fill),
         borderColor: "#A855F7",
-        backgroundColor: "rgba(168, 85, 247, 0.2)",
+        backgroundColor: "rgba(168,85,247,0.2)",
         borderDash: [5, 5],
-        tension: 0.3,
       },
     ],
   };
 
-  // Dummy time-series data for Gas levels vs Forecast
-  const gasForecastData = {
-    labels: fillForecastData.labels,
+  const gasData = {
+    labels: fillData.labels,
     datasets: [
       {
-        label: "CH₄ Actual",
-        data: [2.0, 2.1, 2.3, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, kpis.ch4],
+        label: "CH₄",
+        data: history.map((h) => h.ch4).reverse(),
         borderColor: "#EC4899",
-        backgroundColor: "rgba(236, 72, 153, 0.2)",
-        tension: 0.3,
       },
       {
-        label: "NH₃ Actual",
-        data: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.15, 1.18, kpis.nh3],
+        label: "NH₃",
+        data: history.map((h) => h.nh3).reverse(),
         borderColor: "#3B82F6",
-        backgroundColor: "rgba(59, 130, 246, 0.2)",
-        tension: 0.3,
       },
       {
         label: "CH₄ Forecast",
-        data: [null, null, null, null, null, null, 3.3, 3.6, 3.9, 4.2],
+        data: forecast.map((f) => f.ch4),
         borderColor: "#EC4899",
         borderDash: [5, 5],
-        tension: 0.3,
       },
       {
         label: "NH₃ Forecast",
-        data: [null, null, null, null, null, null, 1.3, 1.5, 1.7, 1.9],
+        data: forecast.map((f) => f.nh3),
         borderColor: "#3B82F6",
         borderDash: [5, 5],
-        tension: 0.3,
       },
     ],
   };
-
-  // Dummy alerts
-  const alerts = [
-    "Bin TPS_003 needs pickup",
-    "High CH₄ forecast at TPS_005",
-  ];
-
-  // Dummy historical table data
-  const historical = [
-    { timestamp: "2025-05-08 10:00", fill: 72, ch4: 3.5, nh3: 1.2 },
-    { timestamp: "2025-05-07 10:00", fill: 80, ch4: 3.4, nh3: 1.18 },
-    { timestamp: "2025-05-06 10:00", fill: 78, ch4: 3.2, nh3: 1.15 },
-    // ... more rows
-  ];
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -133,40 +222,33 @@ const Dashboard = ({ onLogout }) => {
           </div>
         </div>
       </aside>
-
-      {/* Main Content */}
       <main className="ml-64 flex-1 p-6 space-y-8">
-        {/* Header: Selector + Date Range */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl shadow">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">
-            Smart Trash Bin Dashboard
-          </h1>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl shadow">
+          <h1 className="text-2xl font-bold text-gray-900">WasteWatch Dashboard</h1>
+          <div className="flex items-center space-x-4">
             <select
               value={selectedBin}
               onChange={(e) => setSelectedBin(e.target.value)}
               className="border rounded px-3 py-1"
             >
-              <option>All Bins</option>
-              <option>TPS_001</option>
-              <option>TPS_002</option>
-              <option>TPS_003</option>
+              {bins.map((b) => (
+                <option key={b.id}>{b.id}</option>
+              ))}
             </select>
-            <div className="flex items-center space-x-2">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="border rounded px-2 py-1"
-              />
-              <span className="text-gray-500">to</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="border rounded px-2 py-1"
-              />
-            </div>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border rounded px-2 py-1"
+            />
+            <span>to</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border rounded px-2 py-1"
+            />
           </div>
         </div>
 
@@ -174,18 +256,18 @@ const Dashboard = ({ onLogout }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-xl shadow p-5 text-center">
             <h3 className="text-sm font-medium text-gray-500">Current Fill %</h3>
-            <p className="text-3xl font-bold text-gray-900">{kpis.currentFill}%</p>
+            <p className="text-3xl font-bold text-gray-900">{kpis.current_fill}%</p>
           </div>
           <div className="bg-white rounded-xl shadow p-5 text-center">
             <h3 className="text-sm font-medium text-gray-500">Next Pickup</h3>
-            <p className="text-2xl font-bold text-gray-900">{kpis.nextPickup}</p>
+            <p className="text-2xl font-bold text-gray-900">{new Date(kpis.next_pickup).toLocaleDateString()}</p>
           </div>
           <div className="bg-white rounded-xl shadow p-5 text-center">
-            <h3 className="text-sm font-medium text-gray-500">CH₄ Level (ppm)</h3>
+            <h3 className="text-sm font-medium text-gray-500">CH₄ (ppm)</h3>
             <p className="text-2xl font-bold text-gray-900">{kpis.ch4}</p>
           </div>
           <div className="bg-white rounded-xl shadow p-5 text-center">
-            <h3 className="text-sm font-medium text-gray-500">NH₃ Level (ppm)</h3>
+            <h3 className="text-sm font-medium text-gray-500">NH₃ (ppm)</h3>
             <p className="text-2xl font-bold text-gray-900">{kpis.nh3}</p>
           </div>
         </div>
@@ -193,27 +275,65 @@ const Dashboard = ({ onLogout }) => {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Fill % vs Forecast
-            </h2>
-            <Line data={fillForecastData} options={{ responsive: true, plugins: { legend: { position: "bottom" } } }} />
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Fill % vs Forecast</h2>
+            <Line data={fillData} options={{ responsive: true }} />
           </div>
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Gas Levels vs Forecast
-            </h2>
-            <Line data={gasForecastData} options={{ responsive: true, plugins: { legend: { position: "bottom" } } }} />
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Gas Levels vs Forecast</h2>
+            <Line data={gasData} options={{ responsive: true }} />
           </div>
         </div>
 
-        {/* Alerts & Historical Data */}
+        {/* Optimized Route Map */}
+        {isLoaded && directions && (
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Optimized Collection Route</h2>
+            <GoogleMap
+              mapContainerStyle={{ height: "16rem", width: "100%", borderRadius: "0.5rem" }}
+              center={orderedCoords[0]}
+              zoom={13}
+            >
+              <DirectionsRenderer options={{ directions }} />
+
+              {/** START MARKER **/}
+              <Marker
+                position={orderedCoords[0]}
+                label="A"
+                icon={{
+                  url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                }}
+              />
+
+              {/** WAYPOINT MARKERS, labeled 2…n-1 **/}
+              {orderedCoords.slice(1, -1).map((loc, i) => (
+                <Marker
+                  key={i}
+                  position={loc}
+                  label={`${i + 2}`}
+                  icon={{
+                    url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                  }}
+                />
+              ))}
+
+              {/** END MARKER **/}
+              <Marker
+                position={orderedCoords[orderedCoords.length - 1]}
+                label="Z"
+                icon={{
+                  url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                }}
+              />
+            </GoogleMap>
+          </div>
+        )}
+
+        {/* Alerts & History */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-xl shadow">
             <h3 className="text-md font-medium text-gray-800 mb-3">Active Alerts</h3>
             <ul className="list-disc list-inside text-red-600 space-y-1">
-              {alerts.map((alert, i) => (
-                <li key={i}>{alert}</li>
-              ))}
+              {alerts.map((a, i) => <li key={i}>{a}</li>)}
             </ul>
           </div>
           <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow overflow-auto">
@@ -228,9 +348,9 @@ const Dashboard = ({ onLogout }) => {
                 </tr>
               </thead>
               <tbody>
-                {historical.map((row, idx) => (
+                {history.map((row, idx) => (
                   <tr key={idx} className="border-b hover:bg-gray-50">
-                    <td className="px-3 py-2 text-sm text-gray-700">{row.timestamp}</td>
+                    <td className="px-3 py-2 text-sm text-gray-700">{new Date(row.timestamp).toLocaleString()}</td>
                     <td className="px-3 py-2 text-sm text-gray-700">{row.fill}</td>
                     <td className="px-3 py-2 text-sm text-gray-700">{row.ch4} ppm</td>
                     <td className="px-3 py-2 text-sm text-gray-700">{row.nh3} ppm</td>
