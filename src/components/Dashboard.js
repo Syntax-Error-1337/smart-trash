@@ -28,12 +28,12 @@ ChartJS.register(
 );
 
 // Base URL for backend API
-const API_BASE = "https://wastewatchbe.satyaadhiyaksa.com";
+const API_BASE = "xxx";
 
 const Dashboard = ({ onLogout }) => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyBD9pXTPo0nJ4X0H4bpBEr8UKuUn_uAy_E",
+    googleMapsApiKey: "xxx",
   });
 
   // State
