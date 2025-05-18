@@ -28,13 +28,13 @@ ChartJS.register(
 );
 
 // Base URL for backend API
-const API_BASE = "xxx";
+const API_BASE = "https://wastewatchbe.satyaadhiyaksa.com";
 
 const Dashboard = ({ onLogout }) => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "xxx",
-  });
+    googleMapsApiKey: "AIzaSyBD9pXTPo0nJ4X0H4bpBEr8UKuUn_uAy_E",
+  });
 
   // State
   const [bins, setBins] = useState([]);
@@ -55,6 +55,50 @@ const Dashboard = ({ onLogout }) => {
   const [binCoords, setBinCoords] = useState([]);
   const [orderedCoords, setOrderedCoords] = useState([]);
   const [directions, setDirections] = useState(null);
+
+  const chartOptions = {
+  responsive: true,
+  interaction: {
+    mode: 'index',
+    intersect: false,
+  },
+  plugins: {
+    tooltip: {
+      callbacks: {
+        // Show the full datetime in tooltip
+        title: (tooltipItems) => {
+          const index = tooltipItems[0].dataIndex;
+          const rawTimestamp = forecast[index]?.timestamp;
+          if (!rawTimestamp) return tooltipItems[0].label;
+          const date = new Date(rawTimestamp);
+
+          return date.toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false, // set to true for AM/PM format
+          });
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Date',
+      },
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Value',
+      },
+    },
+  },
+};
 
   // Load bins on mount
   useEffect(() => {
@@ -209,7 +253,7 @@ const Dashboard = ({ onLogout }) => {
               alt="Admin"
             />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-800">John Smith</p>
+              <p className="text-sm font-medium text-gray-800">User</p>
               <p className="text-xs text-gray-500">Admin</p>
             </div>
             <button
@@ -276,11 +320,11 @@ const Dashboard = ({ onLogout }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Fill % vs Forecast</h2>
-            <Line data={fillData} options={{ responsive: true }} />
+            <Line data={fillData} options={chartOptions} />
           </div>
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Gas Levels vs Forecast</h2>
-            <Line data={gasData} options={{ responsive: true }} />
+            <Line data={gasData} options={chartOptions} />
           </div>
         </div>
 
