@@ -3,24 +3,28 @@ import React from "react";
 
 const members = [
   {
+    icon: "fas fa-user",
     title: "Satya Adhiyaksa Ardy",
     description:
       "Specializes in firmware development and sensor integration on microcontrollers, enabling accurate real-time data collection from gas, weight, and distance sensors.",
     tags: ["Embedded Systems Engineers"],
   },
   {
+    icon: "fas fa-user",
     title: "Himanshu Tiwari",
     description:
       "Architects and deploys cloud infrastructure for seamless real-time monitoring, ensuring secure and scalable data flow from edge devices to dashboards.",
     tags: ["Cloud Architects"],
   },
   {
+    icon: "fas fa-user",
     title: "Gerald Wijaya Tanubrata",
     description:
       "Designs and manages data pipelines using AWS Lambda and RDS to enable automated processing, storage, and trend forecasting of sensor data.",
     tags: ["Data Analysts"],
   },
   {
+    icon: "fas fa-user",
     title: "李書帆 Lee ShuFan",
     description:
       "Develops and fine-tunes AI models, including LSTM networks, to accurately predict bin fill levels and gas risks based on historical sensor trends.",
@@ -37,7 +41,7 @@ const Members = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-primary/20 to-ai-purple/20 text-primary mb-4 border border-primary/30">
-            <i className="fas fa-robot mr-2"></i> Meet our members
+            <i className="fas fa-users mr-2"></i> Meet our members
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-light mb-4">
             Meet the Team Behind Our Project
