@@ -28,7 +28,7 @@ ChartJS.register(
 );
 
 // Base URL for backend API
-const API_BASE = "xxx";
+const API_BASE = "https://wastewatchbe.satyaadhiyaksa.com";
 
 const Dashboard = ({ onLogout }) => {
   const { isLoaded } = useJsApiLoader({
@@ -55,6 +55,50 @@ const Dashboard = ({ onLogout }) => {
   const [binCoords, setBinCoords] = useState([]);
   const [orderedCoords, setOrderedCoords] = useState([]);
   const [directions, setDirections] = useState(null);
+
+  const chartOptions = {
+    responsive: true,
+    interaction: {
+      mode: "index",
+      intersect: false,
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          // Show the full datetime in tooltip
+          title: (tooltipItems) => {
+            const index = tooltipItems[0].dataIndex;
+            const rawTimestamp = forecast[index]?.timestamp;
+            if (!rawTimestamp) return tooltipItems[0].label;
+            const date = new Date(rawTimestamp);
+
+            return date.toLocaleString(undefined, {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false, // set to true for AM/PM format
+            });
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Date",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Value",
+        },
+      },
+    },
+  };
 
   // Load bins on mount
   useEffect(() => {
@@ -121,7 +165,9 @@ const Dashboard = ({ onLogout }) => {
     const service = new window.google.maps.DirectionsService();
     const origin = orderedCoords[0];
     const destination = origin;
-    const waypoints = orderedCoords.slice(1, -1).map((loc) => ({ location: loc, stopover: true }));
+    const waypoints = orderedCoords
+      .slice(1, -1)
+      .map((loc) => ({ location: loc, stopover: true }));
     service.route(
       {
         origin,
@@ -193,7 +239,9 @@ const Dashboard = ({ onLogout }) => {
       <aside className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40">
         <div className="flex items-center justify-center h-20 px-4 gradient-bg">
           <i className="fas fa-brain text-white text-xl mr-2"></i>
-          <span className="text-xl font-bold text-white">WasteWatch Dashboard</span>
+          <span className="text-xl font-bold text-white">
+            WasteWatch Dashboard
+          </span>
         </div>
         <nav className="mt-6 px-4 space-y-2">
           <div className="flex items-center px-4 py-3 text-gray-600 bg-gray-100 rounded-lg">
@@ -209,7 +257,7 @@ const Dashboard = ({ onLogout }) => {
               alt="Admin"
             />
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-800">John Smith</p>
+              <p className="text-sm font-medium text-gray-800">User</p>
               <p className="text-xs text-gray-500">Admin</p>
             </div>
             <button
@@ -225,7 +273,9 @@ const Dashboard = ({ onLogout }) => {
       <main className="ml-64 flex-1 p-6 space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl shadow">
-          <h1 className="text-2xl font-bold text-gray-900">WasteWatch Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            WasteWatch Dashboard
+          </h1>
           <div className="flex items-center space-x-4">
             <select
               value={selectedBin}
@@ -255,12 +305,18 @@ const Dashboard = ({ onLogout }) => {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-xl shadow p-5 text-center">
-            <h3 className="text-sm font-medium text-gray-500">Current Fill %</h3>
-            <p className="text-3xl font-bold text-gray-900">{kpis.current_fill}%</p>
+            <h3 className="text-sm font-medium text-gray-500">
+              Current Fill %
+            </h3>
+            <p className="text-3xl font-bold text-gray-900">
+              {kpis.current_fill}%
+            </p>
           </div>
           <div className="bg-white rounded-xl shadow p-5 text-center">
             <h3 className="text-sm font-medium text-gray-500">Next Pickup</h3>
-            <p className="text-2xl font-bold text-gray-900">{new Date(kpis.next_pickup).toLocaleDateString()}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {new Date(kpis.next_pickup).toLocaleDateString()}
+            </p>
           </div>
           <div className="bg-white rounded-xl shadow p-5 text-center">
             <h3 className="text-sm font-medium text-gray-500">CH₄ (ppm)</h3>
@@ -275,21 +331,31 @@ const Dashboard = ({ onLogout }) => {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Fill % vs Forecast</h2>
-            <Line data={fillData} options={{ responsive: true }} />
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Fill % vs Forecast
+            </h2>
+            <Line data={fillData} options={chartOptions} />
           </div>
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Gas Levels vs Forecast</h2>
-            <Line data={gasData} options={{ responsive: true }} />
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Gas Levels vs Forecast
+            </h2>
+            <Line data={gasData} options={chartOptions} />
           </div>
         </div>
 
         {/* Optimized Route Map */}
         {isLoaded && directions && (
           <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Optimized Collection Route</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Optimized Collection Route
+            </h2>
             <GoogleMap
-              mapContainerStyle={{ height: "16rem", width: "100%", borderRadius: "0.5rem" }}
+              mapContainerStyle={{
+                height: "16rem",
+                width: "100%",
+                borderRadius: "0.5rem",
+              }}
               center={orderedCoords[0]}
               zoom={13}
             >
@@ -331,13 +397,19 @@ const Dashboard = ({ onLogout }) => {
         {/* Alerts & History */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-md font-medium text-gray-800 mb-3">Active Alerts</h3>
+            <h3 className="text-md font-medium text-gray-800 mb-3">
+              Active Alerts
+            </h3>
             <ul className="list-disc list-inside text-red-600 space-y-1">
-              {alerts.map((a, i) => <li key={i}>{a}</li>)}
+              {alerts.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
             </ul>
           </div>
           <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow overflow-auto">
-            <h3 className="text-md font-medium text-gray-800 mb-3">Historical Sensor Readings</h3>
+            <h3 className="text-md font-medium text-gray-800 mb-3">
+              Historical Sensor Readings
+            </h3>
             <table className="min-w-full text-left">
               <thead className="border-b">
                 <tr>
@@ -350,10 +422,18 @@ const Dashboard = ({ onLogout }) => {
               <tbody>
                 {history.map((row, idx) => (
                   <tr key={idx} className="border-b hover:bg-gray-50">
-                    <td className="px-3 py-2 text-sm text-gray-700">{new Date(row.timestamp).toLocaleString()}</td>
-                    <td className="px-3 py-2 text-sm text-gray-700">{row.fill}</td>
-                    <td className="px-3 py-2 text-sm text-gray-700">{row.ch4} ppm</td>
-                    <td className="px-3 py-2 text-sm text-gray-700">{row.nh3} ppm</td>
+                    <td className="px-3 py-2 text-sm text-gray-700">
+                      {new Date(row.timestamp).toLocaleString()}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-gray-700">
+                      {row.fill}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-gray-700">
+                      {row.ch4} ppm
+                    </td>
+                    <td className="px-3 py-2 text-sm text-gray-700">
+                      {row.nh3} ppm
+                    </td>
                   </tr>
                 ))}
               </tbody>

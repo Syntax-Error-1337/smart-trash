@@ -118,9 +118,9 @@ const Contact = () => {
                       Our Office
                     </h3>
                     <p className="mt-1 text-gray-400">
-                      123 AI Tech Park,
+                      National Taiwan University Science & Technology,
                       <br />
-                      San Francisco, CA 94107
+                      Daan, Taipei 106
                     </p>
                   </div>
                 </div>

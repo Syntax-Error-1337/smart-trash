@@ -10,6 +10,8 @@ import Footer from "./components/Footer";
 import LoginModal from "./components/LoginModal";
 import Dashboard from "./components/Dashboard";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Members from "./components/Member";
+import Github from "./components/Github";
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -44,7 +46,9 @@ function App() {
       <Solutions />
       <Testimonials />
       <CTA />
+      <Members />
       <Contact />
+      <Github />
       <Footer />
       <LoginModal
         show={isLoginOpen}
